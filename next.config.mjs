@@ -18,9 +18,9 @@ const withNextBundleAnalyzer =
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   i18n: nextI18NextConfig.i18n,
-  compiler: {
-    removeConsole: process.env.NODE_ENV === 'production',
-  },
+  // compiler: {
+  //   removeConsole: process.env.NODE_ENV === 'production',
+  // },
   transpilePackages: ['gsap'],
   experimental: {
     optimizePackageImports: ['gsap'],

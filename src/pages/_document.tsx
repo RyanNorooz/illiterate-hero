@@ -10,7 +10,7 @@ import Document, { Head, Html, Main, NextScript } from 'next/document'
 class MyDocument extends Document {
   render() {
     return (
-      <Html  >
+      <Html>
         <Head>
           <meta
             name="theme-color"
@@ -19,7 +19,6 @@ class MyDocument extends Document {
           <meta name="format-detection" content="telephone=no" />
           <link rel="apple-touch-startup-image" href="/icons/apple-splash-750-1334.jpg" />
           <link rel="manifest" href="/site.webmanifest" />
-          <link rel="icon" href="/favicon.ico" />
         </Head>
         <body>
           <Main />
