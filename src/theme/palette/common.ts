@@ -1,36 +1,42 @@
 import type { PaletteOptions } from '@mui/material'
 import { red, yellow, green } from '@mui/material/colors'
 
+export const hiddenItemStyles = {
+  transition: 'filter 250ms cubic-bezier(.17,.84,.44,1)',
+  filter: 'grayscale(.75) opacity(.75) sepia(.5)',
+  ':hover': { filter: 'none' },
+}
+
 const common: PaletteOptions = {
   primary: {
-    main: '#D1036F',
-    contrastText: 'white',
+    main: '#c88d2d',
+    contrastText: '#260a06',
   },
   secondary: {
     main: '#0070F3',
-    contrastText: 'white',
+    contrastText: '#fff',
   },
   error: {
     main: '#f46a6a',
-    contrastText: 'white',
+    contrastText: '#fff',
     dark: red[900],
     light: red[400],
   },
   warning: {
     main: '#f1b44c',
-    contrastText: 'white',
+    contrastText: '#fff',
     dark: yellow[900],
     light: yellow[400],
   },
   success: {
     main: '#34c38f',
-    contrastText: 'white',
+    contrastText: '#fff',
     dark: green[900],
     light: green[400],
   },
   info: {
     main: '#0070F3',
-    contrastText: 'white',
+    contrastText: '#fff',
     dark: green[900],
     light: green[400],
   },

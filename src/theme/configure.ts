@@ -8,11 +8,11 @@ import typography from './typography'
 interface ConfigThemeProps {
   direction: Direction
   mode: ThemeMode
-  fontFamily: readonly string[]
+  fontFamily: string
 }
 
-const configTheme = ({ direction, mode, fontFamily }: ConfigThemeProps) => {
-  const theme = createTheme({
+export default function configTheme({ direction, mode, fontFamily }: ConfigThemeProps) {
+  return createTheme({
     direction,
     palette: {
       ...common,
@@ -21,11 +21,7 @@ const configTheme = ({ direction, mode, fontFamily }: ConfigThemeProps) => {
     },
     typography: {
       ...typography,
-      fontFamily: fontFamily.join(', '),
+      fontFamily: fontFamily,
     },
   })
-
-  return theme
 }
-
-export default configTheme

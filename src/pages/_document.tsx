@@ -1,36 +1,25 @@
-/* eslint-disable @next/next/no-img-element */
-import createEmotionServer from '@emotion/server/create-instance'
-import type { AvailableLocales } from '@/enhancers/configs/availableLocales'
-import { availableLocales } from '@/enhancers/configs/availableLocales'
-import createEmotionCache from '@/enhancers/createEmotionCache'
-import Document, { Head, Html, Main, NextScript } from 'next/document'
+import type { AvailableLocale } from '@/configs/availableLocales'
+import { availableLocales, DEFAULT_LOCALE } from '@/configs/availableLocales'
+import createEmotionCache from '@/lib/createEmotionCache'
+import common from '@/theme/palette/common'
 import type { Direction } from '@/theme/type'
+import createEmotionServer from '@emotion/server/create-instance'
+import type { SimplePaletteColorOptions } from '@mui/material'
+import Document, { Head, Html, Main, NextScript } from 'next/document'
 
 class MyDocument extends Document {
   render() {
     return (
-      <Html>
+      <Html  >
         <Head>
-          <meta name="theme-color" content="#000" />
-
-          <link rel="apple-touch-startup-image" href="/icons/apple-splash-750-1334.jpg" />
-
+          <meta
+            name="theme-color"
+            content={(common.primary as SimplePaletteColorOptions).main ?? '#000'}
+          />
           <meta name="format-detection" content="telephone=no" />
-
-          <link rel="manifest" href="/manifest.json" />
-          <link rel="icon" href="/favicon/favicon.ico" />
-
-          <link href={'/fonts/Ridley/style.css'} rel="stylesheet" />
-
-          <noscript>
-            <img
-              alt="facebook pixel"
-              height="1"
-              width="1"
-              style={{ display: 'none' }}
-              src={`https://www.facebook.com/tr?id=${process.env.NEXT_PUBLIC_FACEBOOK_PIXEL_ID}&ev=PageView&noscript=1`}
-            />
-          </noscript>
+          <link rel="apple-touch-startup-image" href="/icons/apple-splash-750-1334.jpg" />
+          <link rel="manifest" href="/site.webmanifest" />
+          <link rel="icon" href="/favicon.ico" />
         </Head>
         <body>
           <Main />
@@ -46,9 +35,9 @@ MyDocument.getInitialProps = async (ctx) => {
   const initialProps = await Document.getInitialProps(ctx)
 
   // Create Emotion cache
-  const direction = availableLocales[(ctx.locale as AvailableLocales) ?? 'en']
+  const direction = availableLocales[(ctx.locale ?? DEFAULT_LOCALE) as AvailableLocale]
     ?.direction as Direction
-  const cache = createEmotionCache(direction)
+  const cache = createEmotionCache(direction, 'dark')
 
   // Extract styles from html
   const { extractCriticalToChunks, constructStyleTagsFromChunks } = createEmotionServer(cache)
@@ -57,10 +46,7 @@ MyDocument.getInitialProps = async (ctx) => {
 
   ctx.renderPage = () =>
     originalRenderPage({
-      enhanceApp: (App) =>
-        function EnhanceApp(props: any) {
-          return <App serverEmotionCache={cache} {...props} />
-        },
+      enhanceApp: (App) => (props: any) => <App serverEmotionCache={cache} {...props} />,
     })
 
   return {

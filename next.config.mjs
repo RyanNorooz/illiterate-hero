@@ -1,28 +1,37 @@
 process.env.ENV_VALIDATION === 'true' && (await import('./src/env/env.mjs'))
+import nextI18NextConfig from './next-i18next.config.js'
+import withPlugins from 'next-compose-plugins'
+import withPlaiceholder from '@plaiceholder/next'
 
-import BUNDLE_ANALYZER from '@next/bundle-analyzer'
+// import NEXT_PWA from 'next-pwa'
 
-const withBundleAnalyzer = BUNDLE_ANALYZER({
-  enabled: process.env.ANALYZE === 'true',
-})
+// const withPWA = NEXT_PWA({
+//   dest: 'public',
+//   skipWaiting: true,
+//   disable: process.env.NODE_ENV === 'development',
+// })
 
-import i18nextConfig from './next-i18next.config.js'
+const withNextBundleAnalyzer =
+  process.env.ANALYZE === 'true' &&
+  (await import('@next/bundle-analyzer').then((m) => m.default))({ enabled: true })
 
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  i18n: i18nextConfig.i18n,
-  reactStrictMode: true,
+  i18n: nextI18NextConfig.i18n,
   compiler: {
     removeConsole: process.env.NODE_ENV === 'production',
   },
-  modularizeImports: {
-    '@mui/material': {
-      transform: '@mui/material/{{member}}',
-    },
-    '@mui/icons-material': {
-      transform: '@mui/icons-material/{{member}}',
-    },
+  transpilePackages: ['gsap'],
+  experimental: {
+    optimizePackageImports: ['gsap'],
   },
 }
 
-export default withBundleAnalyzer(nextConfig)
+export default withPlugins(
+  [
+    ...(withNextBundleAnalyzer ? [withNextBundleAnalyzer] : []),
+    withPlaiceholder,
+    // withPWA
+  ],
+  nextConfig
+)

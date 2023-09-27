@@ -1,43 +1,28 @@
 import type { ThemeMode } from '@/theme/type'
-import Cookies from 'js-cookie'
+import packageJson from 'package.json'
 import { createContext, useContext } from 'react'
 import { createStore, useStore as useZustandStore } from 'zustand'
-import type { StateStorage } from 'zustand/middleware'
 import { persist } from 'zustand/middleware'
 import { createPersistStorage } from './createPersistStorage'
 
-export const storageName = 'wishwork-boilerplate'
+export const storageName = packageJson.name
+
+export interface PersistedState {
+  theme?: ThemeMode
+  token?: string
+}
 
 export const initialState: PersistedState = {
-  loading: false,
   theme: undefined,
   token: undefined,
 }
 export const initialStateJSON = JSON.stringify(initialState)
 
-export const CookieStorage = {
-  getItem: (name) => {
-    return Cookies.get(name) ?? null
-  },
-  setItem: (name, value) => {
-    Cookies.set(name, value, { sameSite: 'strict', expires: 1 })
-  },
-  removeItem: (name) => {
-    return Cookies.remove(name)
-  },
-} satisfies StateStorage
-
-export interface PersistedState {
-  loading: boolean
-  theme: ThemeMode | undefined
-  token: string | undefined
-}
-
 interface StoreInterface extends PersistedState {
-  toggleLoading: () => void
+  login: (token: string) => void
+  logout: () => void
   toggleTheme: () => void
   setTheme: (themeMode: ThemeMode) => void
-  logout: () => void
 }
 
 export type Store = ReturnType<typeof initializeStore>
@@ -60,27 +45,18 @@ export const initializeStore = (preloadedState: Partial<PersistedState>) => {
       (set) => ({
         ...initialState,
         ...preloadedState,
-        toggleLoading: () =>
-          set((state) => ({
-            ...state,
-            loading: !state.loading,
-          })),
-        toggleTheme: () =>
-          set((state) => ({
-            ...state,
-            theme: state.theme === 'light' ? 'dark' : 'light',
-          })),
-        setTheme: (theme: ThemeMode) =>
-          set((state) => ({
-            ...state,
-            theme,
-          })),
-        logout: () => set((state) => ({ ...state, token: undefined })),
+        login: (token) => set(() => ({ token })),
+        logout: () => set(() => ({ token: undefined })),
+        toggleTheme: () => set((state) => ({ theme: state.theme === 'light' ? 'dark' : 'light' })),
+        setTheme: (theme) => set(() => ({ theme })),
       }),
       {
         name: storageName,
-        storage: createPersistStorage(() => CookieStorage),
-        partialize: (state) => ({ loading: state.loading, theme: state.theme, token: state.token }),
+        storage: createPersistStorage(),
+        partialize: (state) => ({
+          theme: state.theme,
+          token: state.token,
+        }),
       }
     )
   )

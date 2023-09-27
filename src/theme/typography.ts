@@ -1,72 +1,33 @@
 import type { TypographyOptions } from '@mui/material/styles/createTypography'
 
-/* 
-  TypeError
-  changed fontFamily from an array of string ['Ridley'] to a string 'Ridley'
-  to comply with MUI types for typography
-*/
+export const fallbackFonts =
+  '-apple-system, BlinkMacSystemFont, Segoe UI, Roboto, Oxygen, Ubuntu, Cantarell, Fira Sans, Droid Sans, Helvetica Neue, sans-serif' as const
+export const VazirmatnFont = `Vazirmatn UI FD, ${fallbackFonts}` as const
 
 const typography: TypographyOptions = {
   h1: {
-    fontWeight: 'bold',
-    fontSize: '104px',
-    fontFamily: 'Ridley',
-    letterSpacing: '1rem',
+    fontSize: '1.6rem',
+    fontWeight: 900,
   },
-
   h2: {
-    fontWeight: 'bold',
-    fontSize: '60px',
-    fontFamily: "'Rotunda', 'Peyda'",
+    fontSize: '1.8rem',
+    fontWeight: 700,
   },
-
   h3: {
-    fontWeight: 'bold',
-    fontSize: '24px',
-    fontFamily: 'Rotunda',
+    fontSize: '1.125rem',
+    fontWeight: 700,
   },
-
   h4: {
-    fontWeight: 'bold',
-    fontSize: '18px',
-    fontFamily: 'Rotunda',
+    fontSize: '1.2rem',
+    fontWeight: 700,
   },
-
   subtitle1: {
-    fontSize: '24px',
-    fontWeight: '300',
-    fontFamily: 'Rotunda',
-    lineHeight: '30px',
+    fontSize: '1.25rem',
+    fontWeight: 400,
   },
-
   subtitle2: {
-    fontWeight: '300',
-    fontSize: '18px',
-    fontFamily: 'Rotunda',
-  },
-
-  title: {
-    fontWeight: 'bold',
-    fontSize: '16px',
-    fontFamily: 'Ridley',
-  },
-
-  paragraph: {
-    fontWeight: '300',
-    fontSize: '16px',
-    fontFamily: 'Rotunda',
-  },
-
-  caption: {
-    fontWeight: '300',
-    fontSize: '14px',
-    fontFamily: 'Rotunda',
-  },
-
-  link: {
-    fontWeight: '800',
-    fontSize: '14px',
-    fontFamily: 'Rotunda',
+    fontSize: '.875rem',
+    fontWeight: 400,
   },
 }
 

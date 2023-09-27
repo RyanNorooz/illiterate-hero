@@ -4,7 +4,7 @@ import type React from 'react'
 export type Direction = 'ltr' | 'rtl'
 export type ThemeMode = 'light' | 'dark'
 
-export type ThemeObject = {
+export interface ThemeObject {
   fontFamily?: React.CSSProperties['fontFamily']
   direction: Direction
   mode: ThemeMode
@@ -36,6 +36,10 @@ declare module '@mui/material/styles' {
     border?: {
       default: string
     }
+  }
+
+  interface TypeBackground {
+    secondary: string
   }
 }
 

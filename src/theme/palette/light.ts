@@ -6,12 +6,14 @@ const light: PaletteOptions = {
     secondary: '#373737',
   },
   background: {
-    default: '#fff',
-    paper: 'white',
+    default: '#f0f0f0',
+    secondary: '#c5c3c4',
+    paper: '#c5c3c4',
   },
   border: {
-    default: '#E3E3E3',
+    default: '#c5c3c4',
   },
+  divider: '#260a06',
 }
 
 export default light
