@@ -8,12 +8,12 @@ import { createPersistStorage } from './createPersistStorage'
 export const storageName = packageJson.name
 
 export interface PersistedState {
-  theme?: ThemeMode
+  theme: ThemeMode | 'system'
   token?: string
 }
 
 export const initialState: PersistedState = {
-  theme: undefined,
+  theme: 'system',
   token: undefined,
 }
 export const initialStateJSON = JSON.stringify(initialState)
@@ -21,7 +21,6 @@ export const initialStateJSON = JSON.stringify(initialState)
 interface StoreInterface extends PersistedState {
   login: (token: string) => void
   logout: () => void
-  toggleTheme: () => void
   setTheme: (themeMode: ThemeMode) => void
 }
 
@@ -47,7 +46,6 @@ export const initializeStore = (preloadedState: Partial<PersistedState>) => {
         ...preloadedState,
         login: (token) => set(() => ({ token })),
         logout: () => set(() => ({ token: undefined })),
-        toggleTheme: () => set((state) => ({ theme: state.theme === 'light' ? 'dark' : 'light' })),
         setTheme: (theme) => set(() => ({ theme })),
       }),
       {

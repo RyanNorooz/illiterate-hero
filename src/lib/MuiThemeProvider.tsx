@@ -13,10 +13,10 @@ import useThemeDetector from './hooks/useThemeDetector'
 
 interface MuiThemeProviderProps {
   children: ReactNode
-  serverEmotionCache: EmotionCache
+  emotionCache: EmotionCache
 }
 
-export default function MuiThemeProvider({ children, serverEmotionCache }: MuiThemeProviderProps) {
+export default function MuiThemeProvider({ children, emotionCache }: MuiThemeProviderProps) {
   const { locale } = useRouter()
   const theme = useThemeDetector()
 
@@ -30,13 +30,13 @@ export default function MuiThemeProvider({ children, serverEmotionCache }: MuiTh
     document.documentElement.setAttribute('dir', themeObject.direction)
   }, [themeObject.direction])
 
-  const emotionCache = useMemo(
-    () => serverEmotionCache || createEmotionCache(themeObject.direction, themeObject.palette.mode),
-    [serverEmotionCache, themeObject.direction, themeObject.palette.mode]
+  const ClientSideemotionCache = useMemo(
+    () => emotionCache || createEmotionCache(themeObject.direction, themeObject.palette.mode),
+    [emotionCache, themeObject.direction, themeObject.palette.mode]
   )
 
   return (
-    <CacheProvider value={emotionCache}>
+    <CacheProvider value={ClientSideemotionCache}>
       <ThemeProvider theme={themeObject}>
         <CssBaseline enableColorScheme />
         {children}

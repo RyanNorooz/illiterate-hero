@@ -3,7 +3,7 @@ import CustomHead from '@/components/Utils/CustomHead'
 import { DEFAULT_LOCALE } from '@/configs'
 import getInitialState from '@/store/getInitialState'
 import { Stack } from '@mui/material'
-import type { GetServerSideProps } from 'next'
+import type { GetStaticProps } from 'next'
 import { serverSideTranslations } from 'next-i18next/serverSideTranslations'
 
 export default function LandingPage() {
@@ -23,10 +23,10 @@ LandingPage.Layout = function Layout(page: React.ReactElement) {
   )
 }
 
-export const getServerSideProps = (async ({ locale, req }) => ({
+export const getStaticProps = (async ({ locale }) => ({
   props: {
     locale,
-    initialState: getInitialState(req.headers),
+    initialZustandState: getInitialState(),
     ...(await serverSideTranslations(locale ?? DEFAULT_LOCALE)),
   },
-})) satisfies GetServerSideProps
+})) satisfies GetStaticProps

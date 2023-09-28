@@ -1,5 +1,5 @@
-import { useStore } from '@/store/store'
 import { Box, Stack, useMediaQuery } from '@mui/material'
+import { useTheme } from '@mui/material/styles'
 import gsap from 'gsap'
 import { SlowMo } from 'gsap/EasePack'
 import { TextPlugin } from 'gsap/TextPlugin'
@@ -15,7 +15,7 @@ const randomChar = () => chars[Math.floor(Math.random() * (chars.length - 1))]
 const randomString = (length: number) => [...Array(length)].map(randomChar).join('')
 
 export default function CharacterBlastSection() {
-  const theme = useStore((state) => state.theme)
+  const theme = useTheme()
   const isTouch = useMediaQuery('(hover: none)')
 
   const sectionRef = useRef<HTMLDivElement>(null)
@@ -180,13 +180,7 @@ export default function CharacterBlastSection() {
           position: 'absolute',
           inset: 0,
           pointerEvents: 'none',
-          background: `radial-gradient(
-              75vmin circle at center,
-              rgb( 30 41 59)  40%,
-              hsl(calc(218 + var(--hue-offset)), 100%, 58%) 50%,
-              hsl(calc(202 + var(--hue-offset)), 100%, 61%),
-              hsl(calc(151 + var(--hue-offset)), 97%, 58%)
-            )`,
+          background: `radial-gradient(75vmin circle at center, rgb( 30 41 59) 40%, hsl(calc(218 + var(--hue-offset)), 100%, 58%) 50%, hsl(calc(202 + var(--hue-offset)), 100%, 61%), hsl(calc(151 + var(--hue-offset)), 97%, 58%))`,
           mixBlendMode: 'darken',
           zIndex: 10,
         }}
@@ -202,7 +196,7 @@ export default function CharacterBlastSection() {
         }}
       >
         <Image
-          src={theme === 'dark' ? logoImg : logoImgDark}
+          src={theme.palette.mode === 'dark' ? logoImg : logoImgDark}
           alt="im batman"
           style={{ objectFit: 'contain', height: '50vmin', width: '50vmin' }}
         />

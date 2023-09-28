@@ -8,9 +8,15 @@ export default function createEmotionCache(
   direction: Direction = DEFAULT_DIRECTION,
   theme: ThemeMode
 ) {
+  let insertionPoint: HTMLElement | undefined
+
+  if (typeof window !== 'undefined')
+    insertionPoint =
+      document.querySelector<HTMLMetaElement>('meta[name="emotion-insertion-point"]') ?? undefined
+
   return createCache({
     key: `css-${direction}-${theme}`,
-    prepend: true,
+    insertionPoint,
     stylisPlugins: [prefixer, ...(direction === 'rtl' ? [rtlPlugin] : [])],
   })
 }

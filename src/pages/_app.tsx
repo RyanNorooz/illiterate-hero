@@ -1,11 +1,10 @@
 // import InstallPWA from '@/components/PWA/InstallPWA'
 import CustomToastContainer from '@/components/Utils/CustomToastContainer'
 import ErrorBoundary from '@/lib/ErrorBoundary'
+import MuiThemeProvider from '@/lib/MuiThemeProvider'
 import ReactQueryProvider from '@/lib/ReactQueryProvider'
 import { trpc } from '@/lib/trpc'
-import MuiThemeProvider from '@/lib/MuiThemeProvider'
 import StoreProvider from '@/store/StoreProvider'
-import getInitialState from '@/store/getInitialState'
 import type { PersistedState } from '@/store/store'
 import type { EmotionCache } from '@emotion/react'
 import type { NextPage } from 'next'
@@ -18,31 +17,27 @@ import 'public/fonts/Vazirmatn/style.css'
 import type { ReactElement, ReactNode } from 'react'
 import '../styles/main.scss'
 
-interface InitialState {
-  initialState?: PersistedState
+interface PageProps extends SSRConfig {
+  initialZustandState: PersistedState
 }
 
-type NextPageWithLayout = NextPage & {
+type NextPageWithLayout = NextPage<PageProps> & {
   Layout?: (page: ReactElement) => ReactNode
 }
 
-type AppPropsWithLayout<P> = AppProps<P> & {
-  serverEmotionCache: EmotionCache
+export type MyAppProps = AppProps<PageProps> & {
+  emotionCache: EmotionCache
   Component: NextPageWithLayout
 }
 
-const App = ({
-  Component,
-  pageProps: { initialState, ...pageProps },
-  serverEmotionCache,
-}: AppPropsWithLayout<InitialState>) => {
+const App = ({ Component, pageProps, emotionCache }: MyAppProps) => {
   const Layout = Component.Layout ?? ((page) => page)
 
   return (
     <ErrorBoundary>
-      <StoreProvider {...(initialState ?? getInitialState())}>
+      <StoreProvider {...pageProps.initialZustandState}>
         <ReactQueryProvider>
-          <MuiThemeProvider serverEmotionCache={serverEmotionCache}>
+          <MuiThemeProvider emotionCache={emotionCache}>
             <Head>
               <meta name="viewport" content="initial-scale=1, width=device-width" />
             </Head>
@@ -59,6 +54,4 @@ const App = ({
   )
 }
 
-export default trpc.withTRPC(
-  appWithTranslation<AppPropsWithLayout<InitialState & SSRConfig>>(App, nextI18NextConfig)
-)
+export default trpc.withTRPC(appWithTranslation<MyAppProps>(App, nextI18NextConfig))

@@ -12,5 +12,5 @@ export default function useThemeDetector() {
     if (!theme) setTheme(preferredTheme)
   }, [preferredTheme, setTheme, theme])
 
-  return theme ?? preferredTheme
+  return theme === 'system' ? preferredTheme : theme
 }

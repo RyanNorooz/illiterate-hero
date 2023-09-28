@@ -1,6 +1,8 @@
+import linkPreviewImg from 'public/images/link-preview.png'
 import { useMediaQuery } from '@mui/material'
 import { useTranslation } from 'next-i18next'
 import Head from 'next/head'
+import { unstable_getImgProps as getImgProps } from 'next/image'
 import { useRouter } from 'next/router'
 
 interface CustomHeadProps {
@@ -20,10 +22,12 @@ export default function CustomHead(props: CustomHeadProps) {
   // defaults
   const title = props.title ?? t('meta.title')
   const description = props.description ?? t('meta.description')
-  const url = props.url ?? router.asPath
-  const image = props.imageUrl ?? '/images/logo-full.png'
-  const twitterCardType = props.twitterCardType ?? 'summary'
   const keywords = props.keywords ?? []
+  const url = props.url ?? (typeof window === 'undefined' ? router.asPath : window.location.href)
+  const twitterCardType = props.twitterCardType ?? 'summary_large_image'
+  const image =
+    props.imageUrl ??
+    getImgProps({ src: linkPreviewImg.src, alt: title, width: 1200, height: 600 }).props.src
 
   return (
     <Head>
