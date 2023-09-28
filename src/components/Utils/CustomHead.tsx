@@ -1,4 +1,4 @@
-import linkPreviewImg from 'public/images/link-preview.png'
+import linkPreviewImg from 'public/images/link-preview.jpg'
 import { useMediaQuery } from '@mui/material'
 import { useTranslation } from 'next-i18next'
 import Head from 'next/head'
@@ -27,7 +27,7 @@ export default function CustomHead(props: CustomHeadProps) {
   const twitterCardType = props.twitterCardType ?? 'summary_large_image'
   const image =
     props.imageUrl ??
-    getImgProps({ src: linkPreviewImg.src, alt: title, width: 1200, height: 600 }).props.src
+    getImgProps({ src: linkPreviewImg.src, alt: title, width: 1200, height: 630 }).props.src
 
   return (
     <Head>
