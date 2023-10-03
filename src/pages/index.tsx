@@ -1,5 +1,5 @@
-import CharacterBlastSection from '@/components/CharacterBlastSection'
-import CustomHead from '@/components/Utils/CustomHead'
+import CharacterBlastSection from '@/components/pages/home/CharacterBlastSection'
+import CustomHead from '@/components/utils/CustomHead'
 import { DEFAULT_LOCALE } from '@/configs'
 import getInitialState from '@/store/getInitialState'
 import { Stack } from '@mui/material'
@@ -18,6 +18,8 @@ LandingPage.Layout = function Layout(page: React.ReactElement) {
   return (
     <>
       <CustomHead />
+      {/* <BlurryBlobCursorProvider>
+        </BlurryBlobCursorProvider> */}
       {page}
     </>
   )
@@ -27,6 +29,6 @@ export const getStaticProps = (async ({ locale }) => ({
   props: {
     locale,
     initialZustandState: getInitialState(),
-    ...(await serverSideTranslations(locale ?? DEFAULT_LOCALE)),
+    ...(await serverSideTranslations(locale ?? DEFAULT_LOCALE, ['common', 'home'])),
   },
 })) satisfies GetStaticProps

@@ -1,5 +1,5 @@
-// import InstallPWA from '@/components/PWA/InstallPWA'
-import CustomToastContainer from '@/components/Utils/CustomToastContainer'
+// import InstallPWA from '@/components/pwa/InstallPWA'
+import CustomToastContainer from '@/components/utils/CustomToastContainer'
 import ErrorBoundary from '@/lib/ErrorBoundary'
 import MuiThemeProvider from '@/lib/MuiThemeProvider'
 import ReactQueryProvider from '@/lib/ReactQueryProvider'

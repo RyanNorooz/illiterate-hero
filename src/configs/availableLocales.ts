@@ -1,4 +1,4 @@
-import { VazirmatnFont } from '@/theme/typography'
+import { InterFont, VazirmatnFont } from '@/theme/typography'
 import { i18n } from 'next-i18next.config.js'
 
 export const availableLocales = {
@@ -6,7 +6,7 @@ export const availableLocales = {
     key: 'en',
     label: 'English',
     direction: 'ltr',
-    fontFamily: VazirmatnFont,
+    fontFamily: InterFont,
   },
   fa: {
     key: 'fa',

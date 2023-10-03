@@ -7,7 +7,6 @@ module.exports = {
     defaultLocale: 'en',
     /** @type {import('@/configs/availableLocales').AvailableLocale[]} */
     locales: ['en', 'fa'],
-    localeDetection: false,
   },
   localePath: path.resolve('public/locales'),
   localeExtension: 'yaml',

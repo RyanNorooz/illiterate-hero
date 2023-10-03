@@ -4,5 +4,6 @@
   "i18n-ally.defaultNamespace": "common",
   "i18n-ally.namespace": true,
   "i18n-ally.sortKeys": true,
-  "cSpell.language": "en, fa"
+  "cSpell.language": "en, fa",
+  "i18n-ally.sourceLanguage": "en"
 }

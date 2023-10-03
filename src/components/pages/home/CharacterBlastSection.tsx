@@ -1,4 +1,4 @@
-import { Box, Stack, useMediaQuery } from '@mui/material'
+import { Box, Container, Stack, Typography, useMediaQuery } from '@mui/material'
 import { useTheme } from '@mui/material/styles'
 import gsap from 'gsap'
 import { SlowMo } from 'gsap/EasePack'
@@ -7,6 +7,7 @@ import Image from 'next/image'
 import { useCallback, useEffect, useRef, useState } from 'react'
 import logoImgDark from '/public/images/logo-dark.png'
 import logoImg from '/public/images/logo.png'
+import { useTranslation } from 'react-i18next'
 
 gsap.registerPlugin(TextPlugin)
 
@@ -15,19 +16,18 @@ const randomChar = () => chars[Math.floor(Math.random() * (chars.length - 1))]
 const randomString = (length: number) => [...Array(length)].map(randomChar).join('')
 
 export default function CharacterBlastSection() {
+  const { t } = useTranslation(['common', 'home'])
   const theme = useTheme()
   const isTouch = useMediaQuery('(hover: none)')
 
-  const sectionRef = useRef<HTMLDivElement>(null)
   const lettersRef = useRef<HTMLDivElement>(null)
   const gradientRef = useRef<HTMLDivElement>(null)
   const tl = useRef<gsap.core.Timeline | null>(null)
   const acl = useRef<Accelerometer | null>(null)
 
   const [charsNeeded, setCharsNeeded] = useState(0)
-
   const calcCharsNeeded = useCallback(() => {
-    if (typeof window === 'undefined' || !lettersRef.current || !sectionRef.current) return 0
+    if (typeof window === 'undefined' || !lettersRef.current) return 0
 
     function getTextWidth(text: string, font: string) {
       const canvas = document.createElement('canvas')
@@ -47,16 +47,24 @@ export default function CharacterBlastSection() {
       return `${fontWeight} ${fontSize} ${fontFamily}`
     }
 
-    // 11.3 x 20
-    const charWidth = getTextWidth('0', getCanvasFont(lettersRef.current)) * 1.3 //accounting for letter-spacing
-    const charHeight = parseInt(getCssStyle(lettersRef.current, 'font-size')) + 2.5 //accounting for line-height
-    const rect = sectionRef.current.getBoundingClientRect()
+    const letterSpacing = parseFloat(getCssStyle(lettersRef.current, 'letter-spacing'))
+    const charHeight = parseFloat(getCssStyle(lettersRef.current, 'line-height'))
+    const charWidth = getTextWidth('0', getCanvasFont(lettersRef.current)) + letterSpacing
+    const rect = lettersRef.current.getBoundingClientRect()
     const lines = rect.height / charHeight
     const charsPerLine = rect.width / charWidth
     const charsNeeded = Math.round(lines * charsPerLine)
 
+    setCharsNeeded(charsNeeded)
     return charsNeeded
   }, [])
+  useEffect(() => {
+    calcCharsNeeded()
+    window.addEventListener('resize', calcCharsNeeded)
+    return () => {
+      window.removeEventListener('resize', calcCharsNeeded)
+    }
+  }, [calcCharsNeeded, theme.palette.mode])
 
   const refreshLetters = useCallback(
     (duration = 0, ease: string | gsap.EaseFunction = 'none') => {
@@ -72,7 +80,7 @@ export default function CharacterBlastSection() {
   )
 
   const aclOnReadingHandler = useCallback(() => {
-    const rect = sectionRef.current?.getBoundingClientRect()
+    const rect = lettersRef.current?.getBoundingClientRect()
     const w = rect?.width ?? 0
     const h = rect?.height ?? 0
     const aclX = acl.current?.x ?? 0
@@ -88,9 +96,6 @@ export default function CharacterBlastSection() {
   }, [refreshLetters])
 
   useEffect(() => {
-    setCharsNeeded(calcCharsNeeded())
-    window.onresize = () => setCharsNeeded(calcCharsNeeded())
-
     tl.current = gsap.timeline()
 
     let recursionFlag = true
@@ -111,7 +116,6 @@ export default function CharacterBlastSection() {
     }
 
     return () => {
-      window.onresize = null
       recursionFlag = false
       tl.current?.revert()
       tl.current?.kill()
@@ -120,9 +124,10 @@ export default function CharacterBlastSection() {
     }
   }, [aclOnReadingHandler, calcCharsNeeded, charsNeeded, isTouch, refreshLetters])
 
-  const onMouseMoveHandler: React.MouseEventHandler = useCallback(
+  const onPointerMoveHandler: React.MouseEventHandler = useCallback(
     (e) => {
-      const rect = sectionRef.current?.getBoundingClientRect()
+      e.stopPropagation()
+      const rect = lettersRef.current?.getBoundingClientRect()
       const x = e.clientX - (rect?.left ?? 0)
       const y = e.clientY - (rect?.top ?? 0)
       lettersRef.current?.style.setProperty('--x', `${x}px`)
@@ -130,39 +135,97 @@ export default function CharacterBlastSection() {
 
       refreshLetters()
     },
-    [charsNeeded]
+    [refreshLetters]
   )
 
   return (
-    <Stack
-      ref={sectionRef}
-      onMouseMove={isTouch ? undefined : onMouseMoveHandler}
+    <Box
+      onPointerMove={isTouch ? undefined : onPointerMoveHandler}
       sx={{
         position: 'relative',
         height: '100dvh',
         width: '100dvw',
-        cursor: 'url("/images/cursor.svg") 12.5 12.5, auto',
+        overflow: 'hidden',
+        // bgcolor: 'background.default',
+        // maskImage: 'linear-gradient(#000 80%, #0003 95%, transparent)',
       }}
     >
+      <Stack
+        component={(p) => <Container {...p} maxWidth="xl" />}
+        sx={{
+          position: 'absolute',
+          inset: 0,
+          display: 'grid',
+          gridTemplateColumns: [null, null, '50% 50%'],
+          pointerEvents: 'none',
+        }}
+      >
+        <Stack
+          sx={{
+            zIndex: 20,
+            justifyContent: 'center',
+            alignItems: ['center', null, 'start'],
+            filter: (t) => `drop-shadow(0 0 10px ${t.palette.background.default})`,
+          }}
+        >
+          <Typography maxWidth={'8ch'} variant="h1" textAlign={['center', null, 'start']}>
+            {t('hero.title', { ns: 'home' })}
+          </Typography>
+          <Typography variant="subtitle1" textAlign={['center', null, 'start']}>
+            {t('hero.subtitle', { ns: 'home' })}
+          </Typography>
+        </Stack>
+        <Stack alignItems="center" justifyContent="center">
+          <Box
+            ref={gradientRef}
+            sx={(t) => ({
+              '--hue-offset': 0,
+              position: 'absolute',
+              height: '150dvh',
+              width: '150dvw',
+              pointerEvents: 'none',
+              background:
+                t.palette.mode === 'dark'
+                  ? `radial-gradient(75vmin circle at center, ${t.palette.background.default} 30%, hsl(calc(218 + var(--hue-offset)) 100% 60%) 50%, hsl(calc(202 + var(--hue-offset)) 100% 60%), hsl(calc(151 + var(--hue-offset)) 100% 60%))`
+                  : `radial-gradient(75vmin circle at center, ${t.palette.background.default} 30%, hsl(calc(218 + var(--hue-offset)) 100% 40%) 50%, hsl(calc(202 + var(--hue-offset)) 100% 40%), hsl(calc(151 + var(--hue-offset)) 100% 40%))`,
+              mixBlendMode: t.palette.mode === 'dark' ? 'darken' : 'lighten',
+              zIndex: 10,
+            })}
+          />
+          <Image
+            src={theme.palette.mode === 'dark' ? logoImg : logoImgDark}
+            alt="im batman"
+            style={{
+              objectFit: 'contain',
+              height: '50vmin',
+              width: '50vmin',
+              zIndex: 20,
+              filter: `drop-shadow(0 0 10px ${theme.palette.background.default})`,
+            }}
+          />
+        </Stack>
+      </Stack>
       <Box
         ref={lettersRef}
-        sx={{
+        sx={(t) => ({
           '--x': '-1000vw',
           '--y': '-1000vh',
           fontFamily: 'monospace',
-          lineHeight: 1.25,
-          letterSpacing: 2.5,
+          ...(t.palette.mode === 'dark'
+            ? { fontWeight: 400, lineHeight: 1.25, letterSpacing: 2.5 }
+            : { fontWeight: 900, lineHeight: 1, letterSpacing: 2 }),
           height: '100%',
           width: '100%',
           overflow: 'hidden',
           wordWrap: 'break-word',
           userSelect: 'none',
-          WebkitMaskImage:
-            'radial-gradient(75vmin circle at var(--x) var(--y), #fff 25%, #fff5, transparent)',
-          transition: 'opacity 400ms, filter 0s 400ms',
+          maskImage: `radial-gradient(${
+            isTouch ? '90vmin' : '75vmin'
+          } circle at var(--x) var(--y), #000 25%, #0005, transparent)`,
           ...(isTouch
             ? {}
             : {
+                transition: 'opacity 400ms, filter 0s 400ms',
                 opacity: 0,
                 filter: 'blur(10px)',
                 ':hover': {
@@ -171,36 +234,8 @@ export default function CharacterBlastSection() {
                   filter: 'blur(0px)',
                 },
               }),
-        }}
+        })}
       />
-      <Box
-        ref={gradientRef}
-        sx={{
-          '--hue-offset': 0,
-          position: 'absolute',
-          inset: 0,
-          pointerEvents: 'none',
-          background: `radial-gradient(75vmin circle at center, rgb( 30 41 59) 40%, hsl(calc(218 + var(--hue-offset)), 100%, 58%) 50%, hsl(calc(202 + var(--hue-offset)), 100%, 61%), hsl(calc(151 + var(--hue-offset)), 97%, 58%))`,
-          mixBlendMode: 'darken',
-          zIndex: 10,
-        }}
-      />
-      <Stack
-        sx={{
-          position: 'absolute',
-          inset: 0,
-          pointerEvents: 'none',
-          justifyContent: 'center',
-          alignItems: 'center',
-          zIndex: 20,
-        }}
-      >
-        <Image
-          src={theme.palette.mode === 'dark' ? logoImg : logoImgDark}
-          alt="im batman"
-          style={{ objectFit: 'contain', height: '50vmin', width: '50vmin' }}
-        />
-      </Stack>
-    </Stack>
+    </Box>
   )
 }

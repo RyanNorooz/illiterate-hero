@@ -1,4 +1,4 @@
-import BaseButton from '@/components/Base/BaseButton'
+import BaseButton from '@/components/base/BaseButton'
 import { Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle } from '@mui/material'
 import { useTranslation } from 'next-i18next'
 import type { Dispatch, SetStateAction } from 'react'
