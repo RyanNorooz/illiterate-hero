@@ -1,9 +1,13 @@
 import type { TypographyOptions } from '@mui/material/styles/createTypography'
+import { Inter, Vazirmatn } from 'next/font/google'
+
+const inter = Inter({ subsets: ['latin'] })
+const vazirmatn = Vazirmatn({ subsets: ['arabic'] })
 
 export const fallbackFonts =
   '-apple-system, BlinkMacSystemFont, Segoe UI, Roboto, Oxygen, Ubuntu, Cantarell, Fira Sans, Droid Sans, Helvetica Neue, sans-serif' as const
-export const VazirmatnFont = `Vazirmatn UI FD, ${fallbackFonts}` as const
-export const InterFont = `Inter, ${fallbackFonts}` as const
+export const VazirmatnFont = `${vazirmatn.style.fontFamily}, ${fallbackFonts}` as const
+export const InterFont = `${inter.style.fontFamily}, ${fallbackFonts}` as const
 
 const typography: TypographyOptions = {
   h1: {

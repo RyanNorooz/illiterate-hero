@@ -13,7 +13,6 @@ import { appWithTranslation } from 'next-i18next'
 import nextI18NextConfig from 'next-i18next.config.js'
 import type { AppProps } from 'next/app'
 import Head from 'next/head'
-import 'public/fonts/Vazirmatn/style.css'
 import type { ReactElement, ReactNode } from 'react'
 import '../styles/main.scss'
 

@@ -184,7 +184,7 @@ export default function CharacterBlastSection() {
             filter: `drop-shadow(0 0 10px ${theme.palette.background.default})`,
           }}
         >
-          <Typography variant="h1" textAlign={{ xs: 'center', md: 'start' }} maxWidth={'8ch'}>
+          <Typography variant="h1" textAlign={{ xs: 'center', md: 'start' }} whiteSpace="pre-line">
             {t('hero.title', { ns: 'home' })}
           </Typography>
           <Typography variant="h2" textAlign={{ xs: 'center', md: 'start' }}>
