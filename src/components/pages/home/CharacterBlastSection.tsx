@@ -148,6 +148,21 @@ export default function CharacterBlastSection() {
         overflow: 'hidden',
         // bgcolor: 'background.default',
         // maskImage: 'linear-gradient(#000 80%, #0003 95%, transparent)',
+
+        ...(isTouch
+          ? {}
+          : {
+              '#letters': {
+                transition: 'opacity 400ms, filter 0s 400ms',
+                opacity: 0,
+                filter: 'blur(10px)',
+              },
+              ':hover #letters': {
+                transition: 'opacity 400ms, filter 1000ms ease',
+                opacity: 1,
+                filter: 'blur(0px)',
+              },
+            }),
       }}
     >
       <Stack
@@ -157,40 +172,40 @@ export default function CharacterBlastSection() {
           inset: 0,
           display: 'grid',
           gridTemplateColumns: [null, null, '50% 50%'],
-          pointerEvents: 'none',
+          gridTemplateRows: ['50% 15%', '50% 30%', 'none'],
         }}
       >
         <Stack
           sx={{
             zIndex: 20,
             justifyContent: 'center',
-            alignItems: ['center', null, 'start'],
-            filter: (t) => `drop-shadow(0 0 10px ${t.palette.background.default})`,
+            alignItems: { xs: 'center', md: 'start' },
+            gap: { xs: 2, md: 0 },
+            filter: `drop-shadow(0 0 10px ${theme.palette.background.default})`,
           }}
         >
-          <Typography maxWidth={'8ch'} variant="h1" textAlign={['center', null, 'start']}>
+          <Typography maxWidth={'8ch'} variant="h1" textAlign={{ xs: 'center', md: 'start' }}>
             {t('hero.title', { ns: 'home' })}
           </Typography>
-          <Typography variant="subtitle1" textAlign={['center', null, 'start']}>
+          <Typography variant="subtitle1" textAlign={{ xs: 'center', md: 'start' }}>
             {t('hero.subtitle', { ns: 'home' })}
           </Typography>
         </Stack>
         <Stack alignItems="center" justifyContent="center">
           <Box
             ref={gradientRef}
-            sx={(t) => ({
+            sx={{
               '--hue-offset': 0,
               position: 'absolute',
               height: '150dvh',
               width: '150dvw',
-              pointerEvents: 'none',
               background:
-                t.palette.mode === 'dark'
-                  ? `radial-gradient(75vmin circle at center, ${t.palette.background.default} 30%, hsl(calc(218 + var(--hue-offset)) 100% 60%) 50%, hsl(calc(202 + var(--hue-offset)) 100% 60%), hsl(calc(151 + var(--hue-offset)) 100% 60%))`
-                  : `radial-gradient(75vmin circle at center, ${t.palette.background.default} 30%, hsl(calc(218 + var(--hue-offset)) 100% 40%) 50%, hsl(calc(202 + var(--hue-offset)) 100% 40%), hsl(calc(151 + var(--hue-offset)) 100% 40%))`,
-              mixBlendMode: t.palette.mode === 'dark' ? 'darken' : 'lighten',
+                theme.palette.mode === 'dark'
+                  ? `radial-gradient(75vmin circle at center, ${theme.palette.background.default} 30%, hsl(calc(218 + var(--hue-offset)) 100% 60%) 50%, hsl(calc(202 + var(--hue-offset)) 100% 60%), hsl(calc(151 + var(--hue-offset)) 100% 60%))`
+                  : `radial-gradient(75vmin circle at center, ${theme.palette.background.default} 30%, hsl(calc(218 + var(--hue-offset)) 100% 40%) 50%, hsl(calc(202 + var(--hue-offset)) 100% 40%), hsl(calc(151 + var(--hue-offset)) 100% 40%))`,
+              mixBlendMode: theme.palette.mode === 'dark' ? 'darken' : 'lighten',
               zIndex: 10,
-            })}
+            }}
           />
           <Image
             src={theme.palette.mode === 'dark' ? logoImg : logoImgDark}
@@ -207,11 +222,12 @@ export default function CharacterBlastSection() {
       </Stack>
       <Box
         ref={lettersRef}
-        sx={(t) => ({
+        id="letters"
+        sx={{
           '--x': '-1000vw',
           '--y': '-1000vh',
           fontFamily: 'monospace',
-          ...(t.palette.mode === 'dark'
+          ...(theme.palette.mode === 'dark'
             ? { fontWeight: 400, lineHeight: 1.25, letterSpacing: 2.5 }
             : { fontWeight: 900, lineHeight: 1, letterSpacing: 2 }),
           height: '100%',
@@ -222,19 +238,7 @@ export default function CharacterBlastSection() {
           maskImage: `radial-gradient(${
             isTouch ? '90vmin' : '75vmin'
           } circle at var(--x) var(--y), #000 25%, #0005, transparent)`,
-          ...(isTouch
-            ? {}
-            : {
-                transition: 'opacity 400ms, filter 0s 400ms',
-                opacity: 0,
-                filter: 'blur(10px)',
-                ':hover': {
-                  transition: 'opacity 400ms, filter 1000ms ease',
-                  opacity: 1,
-                  filter: 'blur(0px)',
-                },
-              }),
-        })}
+        }}
       />
     </Box>
   )
