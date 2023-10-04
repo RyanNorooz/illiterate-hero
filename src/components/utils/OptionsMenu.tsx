@@ -7,9 +7,7 @@ import {
   Menu,
   MenuItem as MuiMenuItem,
 } from '@mui/material'
-import React from 'react'
-import { useId, useState } from 'react'
-import { z } from 'zod'
+import React, { useId, useState } from 'react'
 
 interface OptionsMenuItem {
   text: string | React.ReactNode
@@ -61,13 +59,6 @@ export default function OptionsMenu(props: OptionsMenuProps) {
         onClose={handleClose}
         slotProps={{ paper: { sx: { maxHeight: 32 * 6, width: '35ch', borderRadius: 3 } } }}
       >
-        {/* {props.items.map((item, index) =>  (
-          <MuiMenuItem key={index} dense onClick={item.cb}>
-            <ListItemIcon>{item.icon}</ListItemIcon>
-            <ListItemText inset={item.inset}>{item.text}</ListItemText>
-          </MuiMenuItem>
-        ))} */}
-
         {isGrouped(props.items)
           ? props.items.map((group, index) => [
               group.map((item, iIndex) => <OptionsMenuItem key={iIndex} {...item} />),
