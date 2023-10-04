@@ -184,10 +184,10 @@ export default function CharacterBlastSection() {
             filter: `drop-shadow(0 0 10px ${theme.palette.background.default})`,
           }}
         >
-          <Typography maxWidth={'8ch'} variant="h1" textAlign={{ xs: 'center', md: 'start' }}>
+          <Typography variant="h1" textAlign={{ xs: 'center', md: 'start' }} maxWidth={'8ch'}>
             {t('hero.title', { ns: 'home' })}
           </Typography>
-          <Typography variant="subtitle1" textAlign={{ xs: 'center', md: 'start' }}>
+          <Typography variant="h2" textAlign={{ xs: 'center', md: 'start' }}>
             {t('hero.subtitle', { ns: 'home' })}
           </Typography>
         </Stack>

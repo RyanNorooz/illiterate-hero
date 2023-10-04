@@ -14,7 +14,7 @@ const typography: TypographyOptions = {
     textRendering: 'optimizeLegibility',
     '@media (min-width: 900px)': { fontSize: '6rem' },
   },
-  subtitle1: {
+  h2: {
     fontSize: '1.5rem',
     lineHeight: 1.2,
     '@media (min-width: 900px)': { fontSize: '2rem' },
