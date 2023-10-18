@@ -5,9 +5,9 @@ const inter = Inter({ subsets: ['latin'] })
 const vazirmatn = Vazirmatn({ subsets: ['arabic'] })
 
 export const fallbackFonts =
-  '-apple-system, BlinkMacSystemFont, Segoe UI, Roboto, Oxygen, Ubuntu, Cantarell, Fira Sans, Droid Sans, Helvetica Neue, sans-serif' as const
-export const VazirmatnFont = `${vazirmatn.style.fontFamily}, ${fallbackFonts}` as const
-export const InterFont = `${inter.style.fontFamily}, ${fallbackFonts}` as const
+  '-apple-system, BlinkMacSystemFont, Segoe UI, Roboto, Oxygen, Ubuntu, Cantarell, Fira Sans, Droid Sans, Helvetica Neue, sans-serif'
+export const VazirmatnFont = `${vazirmatn.style.fontFamily}, ${fallbackFonts}`
+export const InterFont = `${inter.style.fontFamily}, ${fallbackFonts}`
 
 const typography: TypographyOptions = {
   h1: {

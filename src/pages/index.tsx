@@ -10,6 +10,8 @@ export default function LandingPage() {
   return (
     <Stack>
       <CharacterBlastSection />
+      {/* <BasicFlowFieldSection /> */}
+      {/* <TextFlowFieldSection /> */}
     </Stack>
   )
 }

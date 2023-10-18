@@ -12,7 +12,7 @@ import { useTranslation } from 'react-i18next'
 gsap.registerPlugin(TextPlugin)
 
 const chars = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789'
-const randomChar = () => chars[Math.floor(Math.random() * (chars.length - 1))]
+const randomChar = () => chars[~~(Math.random() * chars.length)]
 const randomString = (length: number) => [...Array(length)].map(randomChar).join('')
 
 export default function CharacterBlastSection() {
@@ -51,18 +51,25 @@ export default function CharacterBlastSection() {
     const charHeight = parseFloat(getCssStyle(lettersRef.current, 'line-height'))
     const charWidth = getTextWidth('0', getCanvasFont(lettersRef.current)) + letterSpacing
     const rect = lettersRef.current.getBoundingClientRect()
-    const lines = rect.height / charHeight
+    const lines = rect.height / charHeight + 1
     const charsPerLine = rect.width / charWidth
     const charsNeeded = Math.round(lines * charsPerLine)
 
     setCharsNeeded(charsNeeded)
     return charsNeeded
   }, [])
+  const resizeObserver = useRef<ResizeObserver | null>(null)
+
+  // calculate number of characters needed and recalculate on resize
   useEffect(() => {
     calcCharsNeeded()
-    window.addEventListener('resize', calcCharsNeeded)
+
+    if (!resizeObserver.current)
+      resizeObserver.current = new ResizeObserver(() => calcCharsNeeded())
+    if (lettersRef.current) resizeObserver.current.observe(lettersRef.current)
+
     return () => {
-      window.removeEventListener('resize', calcCharsNeeded)
+      resizeObserver.current?.disconnect()
     }
   }, [calcCharsNeeded, theme.palette.mode])
 
@@ -144,7 +151,7 @@ export default function CharacterBlastSection() {
       sx={{
         position: 'relative',
         height: '100dvh',
-        width: '100dvw',
+        width: '100%',
         overflow: 'hidden',
         // bgcolor: 'background.default',
         // maskImage: 'linear-gradient(#000 80%, #0003 95%, transparent)',
@@ -198,7 +205,7 @@ export default function CharacterBlastSection() {
               '--hue-offset': 0,
               position: 'absolute',
               height: '150dvh',
-              width: '150dvw',
+              width: '150svw',
               background:
                 theme.palette.mode === 'dark'
                   ? `radial-gradient(75vmin circle at center, ${theme.palette.background.default} 30%, hsl(calc(218 + var(--hue-offset)) 100% 60%) 50%, hsl(calc(202 + var(--hue-offset)) 100% 60%), hsl(calc(151 + var(--hue-offset)) 100% 60%))`
@@ -238,6 +245,7 @@ export default function CharacterBlastSection() {
           maskImage: `radial-gradient(${
             isTouch ? '90vmin' : '75vmin'
           } circle at var(--x) var(--y), #000 25%, #0005, transparent)`,
+          scale: '1.02',
         }}
       />
     </Box>
