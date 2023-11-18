@@ -21,9 +21,15 @@ const nextConfig = {
   // compiler: {
   //   removeConsole: process.env.NODE_ENV === 'production',
   // },
-  transpilePackages: ['gsap'],
-  experimental: {
-    optimizePackageImports: ['gsap'],
+  webpack(
+    /** @type {import('webpack').Configuration} */
+    config
+  ) {
+    config.module.rules.push({
+      resourceQuery: /raw/,
+      type: 'asset/source',
+    })
+    return config
   },
 }
 

@@ -1,6 +1,6 @@
 import { toastResponseSchema } from '@/server/zodSchemas'
 import { useStore } from '@/store/store'
-import type { DefaultOptions, MutationObserverOptions } from '@tanstack/react-query'
+import type { DefaultOptions, MutationOptions } from '@tanstack/react-query'
 import { QueryClient } from '@tanstack/react-query'
 import { ReactQueryDevtools } from '@tanstack/react-query-devtools'
 import { TRPCClientError } from '@trpc/client'
@@ -37,7 +37,7 @@ export default function ReactQueryProvider(props: ReactQueryProviderProps) {
     } catch {
       /* empty */
     }
-  }) satisfies MutationObserverOptions['onSettled']
+  }) satisfies MutationOptions['onSettled']
 
   const options = useMemo(
     () =>
@@ -45,7 +45,7 @@ export default function ReactQueryProvider(props: ReactQueryProviderProps) {
         queries: {
           retry: 1,
           keepPreviousData: true,
-          onSettled,
+          // placeholderData: keepPreviousData,
         },
         mutations: {
           retry: false,

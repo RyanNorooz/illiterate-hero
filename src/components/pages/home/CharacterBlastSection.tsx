@@ -1,19 +1,23 @@
 import { Box, Container, Stack, Typography, useMediaQuery } from '@mui/material'
-import { useTheme } from '@mui/material/styles'
-import gsap from 'gsap'
-import { SlowMo } from 'gsap/EasePack'
-import { TextPlugin } from 'gsap/TextPlugin'
+import { alpha, useTheme } from '@mui/material/styles'
+import { gsap } from 'gsap'
+import { SlowMo } from 'gsap/dist/EasePack'
+import { TextPlugin } from 'gsap/dist/TextPlugin'
 import Image from 'next/image'
 import { useCallback, useEffect, useRef, useState } from 'react'
 import logoImgDark from '/public/images/logo-dark.png'
 import logoImg from '/public/images/logo.png'
-import { useTranslation } from 'react-i18next'
+import { useTranslation } from 'next-i18next'
 
 gsap.registerPlugin(TextPlugin)
 
 const chars = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789'
-const randomChar = () => chars[~~(Math.random() * chars.length)]
-const randomString = (length: number) => [...Array(length)].map(randomChar).join('')
+const randomChar = () => chars[(Math.random() * chars.length) | 0]
+const randomString = (length: number) => {
+  let str = ''
+  for (let i = 0; i < length; i++) str += randomChar()
+  return str
+}
 
 export default function CharacterBlastSection() {
   const { t } = useTranslation(['common', 'home'])
@@ -24,6 +28,9 @@ export default function CharacterBlastSection() {
   const gradientRef = useRef<HTMLDivElement>(null)
   const tl = useRef<gsap.core.Timeline | null>(null)
   const acl = useRef<Accelerometer | null>(null)
+  const resizeObserver = useRef<ResizeObserver | null>(null)
+  const intersectionObserver = useRef<IntersectionObserver | null>(null)
+  const sectionIsVisible = useRef(false)
 
   const [charsNeeded, setCharsNeeded] = useState(0)
   const calcCharsNeeded = useCallback(() => {
@@ -43,7 +50,6 @@ export default function CharacterBlastSection() {
       const fontWeight = getCssStyle(el, 'font-weight') || 'normal'
       const fontSize = getCssStyle(el, 'font-size') || '16px'
       const fontFamily = getCssStyle(el, 'font-family') || 'mono-space'
-
       return `${fontWeight} ${fontSize} ${fontFamily}`
     }
 
@@ -58,18 +64,20 @@ export default function CharacterBlastSection() {
     setCharsNeeded(charsNeeded)
     return charsNeeded
   }, [])
-  const resizeObserver = useRef<ResizeObserver | null>(null)
 
   // calculate number of characters needed and recalculate on resize
   useEffect(() => {
     calcCharsNeeded()
 
     if (!resizeObserver.current)
-      resizeObserver.current = new ResizeObserver(() => calcCharsNeeded())
+      resizeObserver.current = new ResizeObserver(
+        () => sectionIsVisible.current && calcCharsNeeded()
+      )
     if (lettersRef.current) resizeObserver.current.observe(lettersRef.current)
 
     return () => {
       resizeObserver.current?.disconnect()
+      resizeObserver.current = null
     }
   }, [calcCharsNeeded, theme.palette.mode])
 
@@ -81,12 +89,14 @@ export default function CharacterBlastSection() {
         text: randomString(charsNeeded),
         overwrite: true,
       })
-      gsap.to(gradientRef.current, { '--hue-offset': '+=2' })
+      gsap.to(gradientRef.current, { '--hue-offset': '+=4' })
     },
     [charsNeeded]
   )
 
   const aclOnReadingHandler = useCallback(() => {
+    if (!sectionIsVisible.current) return
+
     const rect = lettersRef.current?.getBoundingClientRect()
     const w = rect?.width ?? 0
     const h = rect?.height ?? 0
@@ -97,7 +107,7 @@ export default function CharacterBlastSection() {
     const y = Math.min(Math.max(((aclY * -1 * h) / 9.81) * m + h, 0), h)
     lettersRef.current?.style.setProperty('--x', `${x}px`)
     lettersRef.current?.style.setProperty('--y', `${y}px`)
-    // console.log('w, h, x, y, aclX, aclY', [w, h, x, y, aclX, aclY].map(Math.round))
+    // console.log('w, h, x, y, aclX, aclY', [w, h, x, y, aclX, aclY].map((x) => x | 0))
 
     refreshLetters()
   }, [refreshLetters])
@@ -105,15 +115,22 @@ export default function CharacterBlastSection() {
   useEffect(() => {
     tl.current = gsap.timeline()
 
+    if (!intersectionObserver.current)
+      intersectionObserver.current = new IntersectionObserver((entries) => {
+        if (entries[0]) sectionIsVisible.current = entries[0].intersectionRatio > 0
+      })
+    if (lettersRef.current) intersectionObserver.current.observe(lettersRef.current)
+
     let recursionFlag = true
     const randomRefresh = (): Promise<void> =>
       new Promise<void>((r) => {
-        const duration = Math.random() * 0.5
-        setTimeout(
-          () => r(void refreshLetters(duration, SlowMo.ease.config(0, 0.5))),
-          duration * 1000
-        )
-      }).then(() => void (recursionFlag && randomRefresh()))
+        const duration = Math.random() * 0.8
+        setTimeout(() => {
+          if (!recursionFlag) return
+          if (sectionIsVisible.current) refreshLetters(duration, SlowMo.ease.config(0, 0.5))
+          r()
+        }, duration * 1000)
+      }).then(() => randomRefresh())
     randomRefresh()
 
     if (isTouch && 'Accelerometer' in window) {
@@ -124,15 +141,22 @@ export default function CharacterBlastSection() {
 
     return () => {
       recursionFlag = false
+      sectionIsVisible.current = false
+      intersectionObserver.current?.disconnect()
+      intersectionObserver.current = null
       tl.current?.revert()
       tl.current?.kill()
+      tl.current = null
       acl.current?.removeEventListener('reading', aclOnReadingHandler)
       acl.current?.stop()
+      acl.current = null
     }
   }, [aclOnReadingHandler, calcCharsNeeded, charsNeeded, isTouch, refreshLetters])
 
   const onPointerMoveHandler: React.MouseEventHandler = useCallback(
     (e) => {
+      if (!sectionIsVisible.current) return
+
       e.stopPropagation()
       const rect = lettersRef.current?.getBoundingClientRect()
       const x = e.clientX - (rect?.left ?? 0)
@@ -153,23 +177,24 @@ export default function CharacterBlastSection() {
         height: '100dvh',
         width: '100%',
         overflow: 'hidden',
+
         // bgcolor: 'background.default',
         // maskImage: 'linear-gradient(#000 80%, #0003 95%, transparent)',
 
-        ...(isTouch
-          ? {}
-          : {
-              '#letters': {
-                transition: 'opacity 400ms, filter 0s 400ms',
-                opacity: 0,
-                filter: 'blur(10px)',
-              },
-              ':hover #letters': {
-                transition: 'opacity 400ms, filter 1000ms ease',
-                opacity: 1,
-                filter: 'blur(0px)',
-              },
-            }),
+        // ...(isTouch
+        //   ? {}
+        //   : {
+        //       '#letters': {
+        //         transition: 'opacity 400ms, filter 0s 400ms',
+        //         opacity: 0,
+        //         filter: 'blur(10px)',
+        //       },
+        //       ':hover #letters': {
+        //         transition: 'opacity 400ms, filter 1000ms ease',
+        //         opacity: 1,
+        //         filter: 'blur(0px)',
+        //       },
+        //     }),
       }}
     >
       <Stack
@@ -184,14 +209,14 @@ export default function CharacterBlastSection() {
       >
         <Stack
           sx={{
-            zIndex: 20,
             justifyContent: 'center',
             alignItems: { xs: 'center', md: 'start' },
-            gap: { xs: 2, md: 0 },
-            filter: `drop-shadow(0 0 10px ${theme.palette.background.default})`,
+            gap: 2,
+            whiteSpace: 'pre-line',
+            zIndex: 1,
           }}
         >
-          <Typography variant="h1" textAlign={{ xs: 'center', md: 'start' }} whiteSpace="pre-line">
+          <Typography variant="h1" textAlign={{ xs: 'center', md: 'start' }}>
             {t('hero.title', { ns: 'home' })}
           </Typography>
           <Typography variant="h2" textAlign={{ xs: 'center', md: 'start' }}>
@@ -208,22 +233,26 @@ export default function CharacterBlastSection() {
               width: '150svw',
               background:
                 theme.palette.mode === 'dark'
-                  ? `radial-gradient(75vmin circle at center, ${theme.palette.background.default} 30%, hsl(calc(218 + var(--hue-offset)) 100% 60%) 50%, hsl(calc(202 + var(--hue-offset)) 100% 60%), hsl(calc(151 + var(--hue-offset)) 100% 60%))`
-                  : `radial-gradient(75vmin circle at center, ${theme.palette.background.default} 30%, hsl(calc(218 + var(--hue-offset)) 100% 40%) 50%, hsl(calc(202 + var(--hue-offset)) 100% 40%), hsl(calc(151 + var(--hue-offset)) 100% 40%))`,
+                  ? `radial-gradient(75vmin circle at center, ${
+                      theme.palette.background.default
+                    } 30%, hsl(calc(218 + var(--hue-offset)) 100% 60%) 50%, hsl(calc(202 + var(--hue-offset)) 100% 60%), hsl(calc(151 + var(--hue-offset)) 100% 60%), ${alpha(
+                      theme.palette.background.default,
+                      0.8
+                    )})`
+                  : `radial-gradient(75vmin circle at center, ${
+                      theme.palette.background.default
+                    } 30%, hsl(calc(218 + var(--hue-offset)) 100% 40%) 50%, hsl(calc(202 + var(--hue-offset)) 100% 40%), hsl(calc(151 + var(--hue-offset)) 100% 40%), ${alpha(
+                      theme.palette.background.default,
+                      0.8
+                    )})`,
               mixBlendMode: theme.palette.mode === 'dark' ? 'darken' : 'lighten',
-              zIndex: 10,
+              zIndex: 0,
             }}
           />
           <Image
             src={theme.palette.mode === 'dark' ? logoImg : logoImgDark}
             alt="im batman"
-            style={{
-              objectFit: 'contain',
-              height: '50vmin',
-              width: '50vmin',
-              zIndex: 20,
-              filter: `drop-shadow(0 0 10px ${theme.palette.background.default})`,
-            }}
+            style={{ objectFit: 'contain', height: '50vmin', width: '50vmin', zIndex: 1 }}
           />
         </Stack>
       </Stack>
@@ -231,6 +260,8 @@ export default function CharacterBlastSection() {
         ref={lettersRef}
         id="letters"
         sx={{
+          position: 'absolute',
+          inset: 0,
           '--x': '-1000vw',
           '--y': '-1000vh',
           fontFamily: 'monospace',
@@ -246,6 +277,7 @@ export default function CharacterBlastSection() {
             isTouch ? '90vmin' : '75vmin'
           } circle at var(--x) var(--y), #000 25%, #0005, transparent)`,
           scale: '1.02',
+          zIndex: -1,
         }}
       />
     </Box>

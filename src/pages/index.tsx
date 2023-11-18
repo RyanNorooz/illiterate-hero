@@ -1,3 +1,4 @@
+import FloatingFooter from '@/components/FloatingFooter'
 import CharacterBlastSection from '@/components/pages/home/CharacterBlastSection'
 import CustomHead from '@/components/utils/CustomHead'
 import { DEFAULT_LOCALE } from '@/configs'
@@ -12,6 +13,7 @@ export default function LandingPage() {
       <CharacterBlastSection />
       {/* <BasicFlowFieldSection /> */}
       {/* <TextFlowFieldSection /> */}
+      {/* <SeaWavesSection /> */}
     </Stack>
   )
 }
@@ -23,6 +25,7 @@ LandingPage.Layout = function Layout(page: React.ReactElement) {
       {/* <BlurryBlobCursorProvider>
         </BlurryBlobCursorProvider> */}
       {page}
+      <FloatingFooter />
     </>
   )
 }

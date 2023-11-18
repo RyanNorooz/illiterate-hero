@@ -95,18 +95,16 @@ export class Effect {
     this.ctx.save()
     this.ctx.strokeStyle = '#fff'
     this.ctx.lineWidth = 0.2
+    this.ctx.beginPath()
     for (let c = 0; c < this.cols; c++) {
-      this.ctx.beginPath()
       this.ctx.moveTo(this.cellSize * c, 0)
       this.ctx.lineTo(this.cellSize * c, this.height)
-      this.ctx.stroke()
     }
     for (let r = 0; r < this.rows; r++) {
-      this.ctx.beginPath()
       this.ctx.moveTo(0, this.cellSize * r)
       this.ctx.lineTo(this.width, this.cellSize * r)
-      this.ctx.stroke()
     }
+    this.ctx.stroke()
     this.ctx.restore()
   }
   resize() {

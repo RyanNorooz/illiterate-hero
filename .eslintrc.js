@@ -15,9 +15,22 @@ module.exports = {
       'warn',
       {
         code: 100,
+        ignoreUrls: true,
         ignoreStrings: true,
-        ignoreTemplateLiterals: true,
         ignoreComments: true,
+        ignoreRegExpLiterals: true,
+        ignoreTemplateLiterals: true,
+      },
+    ],
+    'no-restricted-imports': [
+      'warn',
+      {
+        paths: [
+          {
+            name: 'react-i18next',
+            message: 'Use `next-i18next` instead to avoid hydration errors.',
+          },
+        ],
       },
     ],
   },

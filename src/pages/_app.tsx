@@ -15,12 +15,13 @@ import type { AppProps } from 'next/app'
 import Head from 'next/head'
 import type { ReactElement, ReactNode } from 'react'
 import '../styles/main.scss'
+import { LenisProvider } from '@/lib/lenisScrollSmoother'
 
 interface PageProps extends SSRConfig {
   initialZustandState: PersistedState
 }
 
-type NextPageWithLayout = NextPage<PageProps> & {
+export type NextPageWithLayout = NextPage<PageProps> & {
   Layout?: (page: ReactElement) => ReactNode
 }
 
@@ -37,15 +38,17 @@ const App = ({ Component, pageProps, emotionCache }: MyAppProps) => {
       <StoreProvider {...pageProps.initialZustandState}>
         <ReactQueryProvider>
           <MuiThemeProvider emotionCache={emotionCache}>
-            <Head>
-              <meta name="viewport" content="initial-scale=1, width=device-width" />
-            </Head>
+            <LenisProvider>
+              <Head>
+                <meta name="viewport" content="initial-scale=1, width=device-width" />
+              </Head>
 
-            {Layout(<Component {...pageProps} />)}
+              {Layout(<Component {...pageProps} />)}
 
-            {/* <InstallPWA /> */}
+              {/* <InstallPWA /> */}
 
-            <CustomToastContainer />
+              <CustomToastContainer />
+            </LenisProvider>
           </MuiThemeProvider>
         </ReactQueryProvider>
       </StoreProvider>

@@ -3,22 +3,20 @@ import gsap from 'gsap'
 import { Effect } from './effect'
 
 export const initTextFlowField: InitCanvas = (ctx) => {
-  let toggle = false
   const effect = new Effect(ctx)
 
   return {
     draw: (ctx, time) => {
-      if (time !== 0 && time % 3000 < 3000) {
-        toggle = !toggle
-        if (toggle) {
+      if (time !== 0)
+        if (~~(time / 1000) % 6 === 0) {
           effect.text = 'TS'
           gsap.to(effect, { duration: 1, hue: 200 })
-        } else {
+          effect.updateFlowField()
+        } else if (~~(time / 1000) % 3 === 0) {
           effect.text = 'JS'
           gsap.to(effect, { duration: 1, hue: 40 })
+          effect.updateFlowField()
         }
-        effect.updateFlowField()
-      }
 
       effect.render()
     },

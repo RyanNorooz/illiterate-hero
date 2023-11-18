@@ -1,12 +1,6 @@
 import type { PaletteOptions } from '@mui/material'
 import { red, yellow, green } from '@mui/material/colors'
 
-export const hiddenItemStyles = {
-  transition: 'filter 250ms cubic-bezier(.17,.84,.44,1)',
-  filter: 'grayscale(.75) opacity(.75) sepia(.5)',
-  ':hover': { filter: 'none' },
-}
-
 const common: PaletteOptions = {
   primary: {
     main: '#c88d2d',

@@ -8,6 +8,7 @@ export default function TextFlowFieldSection() {
       <CanvasElement
         initCanvas={initTextFlowField}
         canvasProps={{ style: { width: '100%', height: '100dvh' } }}
+        clearCanvasOnRender
       />
     </Stack>
   )

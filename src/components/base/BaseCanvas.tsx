@@ -1,11 +1,12 @@
 import { useCallback, useEffect, useRef } from 'react'
 
 export type InitCanvas = (context: CanvasRenderingContext2D) => { draw: Draw }
-export type Draw = (context: CanvasRenderingContext2D, time: number) => void
+export type Draw = (context: CanvasRenderingContext2D, time: number, frameCount: number) => void
 
 interface BaseCanvasProps {
   initCanvas: InitCanvas
   canvasProps?: React.CanvasHTMLAttributes<HTMLCanvasElement>
+  /** @default false */
   clearCanvasOnRender?: boolean
 }
 
@@ -13,16 +14,14 @@ export default function BaseCanvas(props: BaseCanvasProps) {
   const canvasRef = useRef<HTMLCanvasElement>(null)
   const resizeObserver = useRef<ResizeObserver | null>(null)
 
-  const preDraw = useCallback(() => {
-    const ctx = canvasRef.current?.getContext('2d')
-    if (!ctx) return
+  const preDraw = useCallback(
+    (ctx: CanvasRenderingContext2D) => {
+      if (props.clearCanvasOnRender) ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height)
+    },
+    [props.clearCanvasOnRender]
+  )
 
-    if (props.clearCanvasOnRender) ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height)
-  }, [props.clearCanvasOnRender])
-
-  // const postDraw = useCallback(() => {
-  //   const ctx = canvasRef.current?.getContext('2d')
-  //   if (!ctx) return
+  // const postDraw = useCallback((ctx: CanvasRenderingContext2D) => {
   // }, [])
 
   useEffect(() => {
@@ -42,22 +41,24 @@ export default function BaseCanvas(props: BaseCanvasProps) {
       })
     resizeObserver.current.observe(ctx.canvas)
 
-    preDraw()
+    preDraw(ctx)
     const { draw } = props.initCanvas(ctx)
 
-    let animationFrameId: number
+    let animationFrameHandle: number
+    let frameCount = 0
 
     const render: FrameRequestCallback = (time) => {
       if (!ctx) return
-      preDraw()
-      draw(ctx, time)
+      ++frameCount
+      preDraw(ctx)
+      draw(ctx, time, frameCount)
       // postDraw()
-      animationFrameId = requestAnimationFrame(render)
+      animationFrameHandle = requestAnimationFrame(render)
     }
-    render(0)
+    animationFrameHandle = requestAnimationFrame(render)
 
     return () => {
-      cancelAnimationFrame(animationFrameId)
+      cancelAnimationFrame(animationFrameHandle)
       resizeObserver.current?.disconnect()
       resizeObserver.current = null
     }
