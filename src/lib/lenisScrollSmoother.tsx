@@ -1,5 +1,5 @@
 import Lenis from '@studio-freight/lenis'
-import { createContext, useContext, useEffect, useLayoutEffect, useMemo, useState } from 'react'
+import { createContext, useContext, useEffect, useMemo, useState } from 'react'
 
 interface LenisContext {
   lenis: Lenis | null
@@ -14,7 +14,7 @@ interface LenisProviderProps {
 export function LenisProvider(props: LenisProviderProps) {
   const [lenis, setLenis] = useState<Lenis | null>(null)
 
-  useLayoutEffect(() => {
+  useEffect(() => {
     const lenis = new Lenis()
     setLenis(lenis)
 

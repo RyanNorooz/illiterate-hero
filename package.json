@@ -6,7 +6,7 @@
     "build": "next build",
     "start": "next start",
     "analyze": "cross-env ANALYZE=true next build",
-    "format": "prettier --write \"**/*.{js,ts,tsx,json}\"",
+    "format": "prettier . --ignore-unknown --write",
     "lint": "eslint . --ext .ts,.tsx --color --fix"
   },
   "dependencies": {

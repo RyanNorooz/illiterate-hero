@@ -17,6 +17,7 @@ const withNextBundleAnalyzer =
 
 /** @type {import('next').NextConfig} */
 const nextConfig = {
+  reactStrictMode: true,
   i18n: nextI18NextConfig.i18n,
   // compiler: {
   //   removeConsole: process.env.NODE_ENV === 'production',

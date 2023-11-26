@@ -89,7 +89,7 @@ export default function CharacterBlastSection() {
         text: randomString(charsNeeded),
         overwrite: true,
       })
-      gsap.to(gradientRef.current, { '--hue-offset': '+=4' })
+      gsap.to(gradientRef.current, { '--hue-offset': '+=5' })
     },
     [charsNeeded]
   )
@@ -159,10 +159,11 @@ export default function CharacterBlastSection() {
 
       e.stopPropagation()
       const rect = lettersRef.current?.getBoundingClientRect()
-      const x = e.clientX - (rect?.left ?? 0)
-      const y = e.clientY - (rect?.top ?? 0)
+      const x = (e.clientX - (rect?.left ?? 0)) | 0
+      const y = (e.clientY - (rect?.top ?? 0)) | 0
       lettersRef.current?.style.setProperty('--x', `${x}px`)
       lettersRef.current?.style.setProperty('--y', `${y}px`)
+      // gsap.to(lettersRef.current, { '--x': `${x}px`, '--y': `${y}px` })
 
       refreshLetters()
     },
@@ -262,8 +263,8 @@ export default function CharacterBlastSection() {
         sx={{
           position: 'absolute',
           inset: 0,
-          '--x': '-1000vw',
-          '--y': '-1000vh',
+          '--x': '20vw',
+          '--y': '20vh',
           fontFamily: 'monospace',
           ...(theme.palette.mode === 'dark'
             ? { fontWeight: 400, lineHeight: 1.25, letterSpacing: 2.5 }
